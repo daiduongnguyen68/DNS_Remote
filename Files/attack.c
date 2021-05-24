@@ -69,8 +69,10 @@ int main()
     unsigned short transaction_id = 1000;
   
     // Generate a random name with length HOSTNAME_QUERY_LENGTH = 5
-    char name[HOSTNAME_QUERY_LENGTH];
-    for (int k=0; k < HOSTNAME_QUERY_LENGTH; k++)  name[k] = a[rand() % 26];
+    char name[HOSTNAME_QUERY_LENGTH + 1];
+    for (int k=0; k < HOSTNAME_QUERY_LENGTH; k++)  
+      name[k] = a[rand() % 26];
+    name[HOSTNAME_QUERY_LENGTH] = '\0';
       
     printf("Request #%d is [%s.example.com], transaction ID is: [%hu]\n", i++, name, transaction_id); 
     
